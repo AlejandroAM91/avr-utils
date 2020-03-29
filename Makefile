@@ -4,11 +4,14 @@ CPU_FREQ ?= 4000000UL
 
 # DEFAULT CONFIG
 ## Programs
-SHELL := /bin/sh
+INSTALL := cp -a
+INSTALL_PROGRAM := $(INSTALL)
+INSTALL_DATA := ${INSTALL}
 MKDIR := mkdir -p
+SHELL := /bin/sh
 
 ## Compilers
-AR := avr-ar
+AR	:= avr-ar
 CXX := avr-g++
 
 ## Directories
@@ -17,9 +20,15 @@ objdir := $(CURDIR)/obj
 incdir := $(CURDIR)/inc
 srcdir := $(CURDIR)/src
 
+## Install directories
+prefix		?= /usr/local
+exec_prefix ?= $(prefix)
+includedir  ?= $(prefix)/include
+libdir 		?= $(exec_prefix)/lib
+
 ## Targets files
-TARGET := avrutils
-LIBFILE := $(outdir)/lib$(TARGET).a
+TARGET	 := avrutils
+LIBFILE	 := $(outdir)/lib$(TARGET).a
 SRCFILES := $(shell find $(srcdir) -type f -name *.cpp)
 DEPFILES := $(patsubst $(srcdir)/%,$(objdir)/%,$(SRCFILES:.cpp=.d))
 OBJFILES := $(patsubst $(srcdir)/%,$(objdir)/%,$(SRCFILES:.cpp=.o))
@@ -43,6 +52,23 @@ distclean:
 	$(info Removing files and directories...)
 	-@$(RM) -r $(objdir) $(outdir)
 
+.PHONY: install
+install: $(LIBFILE) installdirs
+	$(info Installing...)
+	@$(INSTALL_DATA) $< $(DESTDIR)$(libdir)
+	@$(INSTALL_DATA) $(incdir)/* $(DESTDIR)$(includedir)
+
+.PHONY: installdirs
+installdirs:
+	@$(MKDIR) $(DESTDIR)$(includedir)
+	@$(MKDIR) $(DESTDIR)$(libdir)
+
+.PHONY: uninstall
+uninstall:
+	$(info Uninstalling...)
+	-@$(RM) -r $(patsubst $(incdir)/%,$(DESTDIR)$(includedir)/%,$(wildcard $(incdir)/*))
+	-@$(RM) -r $(patsubst $(outdir)/%,$(DESTDIR)$(libdir)/%,$(LIBFILE))
+
 ## Output
 $(LIBFILE): $(OBJFILES)
 	$(info Linking $(notdir $@)...)
@@ -51,9 +77,9 @@ $(LIBFILE): $(OBJFILES)
 
 ## Patterns
 $(objdir)/%.o: $(srcdir)/%.cpp $(CURDIR)/Makefile
-	$(info Compiling $(patsubst $(CURDIR)/%,./%, $<)...)
+	$(info Compiling $(patsubst $(CURDIR)/%,./%,$<)...)
 	@$(MKDIR) $(dir $@)
-	@$(CXX) -c -MMD $(CPPFLAGS) $(CXXFLAGS) -o $@ $<
+	@$(CXX) -c -MMD $(CPPFLAGS) $(CXXFLAGS) -o $@ $< 
 
 ## Dependencies
 -include $(DEPFILES)
