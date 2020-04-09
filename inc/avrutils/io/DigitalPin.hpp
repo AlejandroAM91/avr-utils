@@ -1,6 +1,7 @@
 #ifndef AVRUTILS_DIGITAL_PIN_HPP
 #define AVRUTILS_DIGITAL_PIN_HPP
 
+#include "Pin.hpp"
 #include "Port.hpp"
 
 namespace avrutils {
@@ -10,7 +11,10 @@ class DigitalPin {
 public:
     DigitalPin(Port port, int npin);
 
-    void write(bool value);
+    void setMode(PinMode value);
+
+    PinValue getValue();
+    void setValue(PinValue value);
 
 private:
     int _npin;

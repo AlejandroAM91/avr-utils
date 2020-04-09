@@ -6,7 +6,7 @@ CPU_FREQ ?= 4000000UL
 ## Programs
 INSTALL := cp -a
 INSTALL_PROGRAM := $(INSTALL)
-INSTALL_DATA := ${INSTALL}
+INSTALL_DATA := $(INSTALL)
 MKDIR := mkdir -p
 SHELL := /bin/sh
 

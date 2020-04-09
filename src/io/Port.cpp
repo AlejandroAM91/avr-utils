@@ -8,7 +8,24 @@ Port::Port(ADDR ddr, ADDR pin, ADDR pout) : _ddr(ddr), _pin(pin), _pout(pout) {
     *_pout = 0;
 }
 
-void Port::write(int npin, bool value) {
+void Port::setMode(int npin, PinMode mode) {
+    if (mode) {
+        *_ddr |= (1 << npin);
+    } else {
+        *_ddr &= ~(1 << npin);
+    }
+}
+
+PinValue Port::getValue(int npin) {
+    int value = *_pin & (1 << npin);
+    if (value) {
+        return HIGH;
+    } else {
+        return LOW;
+    }
+}
+
+void Port::setValue(int npin, PinValue value) {
     if (value) {
         *_pout |= (1 << npin);
     } else {
