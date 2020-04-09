@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "name": "ATmega328P",
+            "defines": [
+                "__AVR_ATmega328P__"
+            ],
+            "includePath": [
+                "${default}",
+                "inc"
+            ]
+        }
+    ],
+    "version": 4
+}
